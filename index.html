@@ -388,6 +388,26 @@
                     <span class="step-number">2</span>
                     Review or Enter Transcription
                 </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; color: #6B7280; margin-bottom: 8px; font-weight: 500;">
+                        Sample Duration (optional - for pasted text):
+                    </label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <input type="number" id="manualMinutes" min="0" max="59" placeholder="0" 
+                                   style="width: 60px; padding: 8px; border: 1px solid #E5E7EB; border-radius: 4px; font-size: 14px; text-align: center;">
+                            <span style="font-size: 13px; color: #6B7280;">min</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <input type="number" id="manualSeconds" min="0" max="59" placeholder="0" 
+                                   style="width: 60px; padding: 8px; border: 1px solid #E5E7EB; border-radius: 4px; font-size: 14px; text-align: center;">
+                            <span style="font-size: 13px; color: #6B7280;">sec</span>
+                        </div>
+                        <span style="font-size: 12px; color: #9CA3AF; font-style: italic; margin-left: 10px;">
+                            Leave blank to estimate based on word count
+                        </span>
+                    </div>
+                </div>
                 <div style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                     <button class="btn" id="markNonCIUBtn" style="background: #f59e0b; color: white; padding: 8px 16px; font-size: 14px;">
                         <span>🖍️</span>
@@ -745,8 +765,16 @@
                     }
                 });
 
+                // Get manual time entry if provided
+                const manualMinutes = parseInt(document.getElementById('manualMinutes').value) || 0;
+                const manualSeconds = parseInt(document.getElementById('manualSeconds').value) || 0;
+                const manualDuration = (manualMinutes * 60) + manualSeconds;
+                
+                // Use manual duration if provided, otherwise use recording duration
+                const duration = manualDuration > 0 ? manualDuration : recordingDuration;
+
                 // Perform analysis
-                const results = analyzeTranscript(transcriptText, recordingDuration, manuallyMarkedNonCIUs);
+                const results = analyzeTranscript(transcriptText, duration, manuallyMarkedNonCIUs);
                 
                 displayResults(results);
                 showStatus(analyzeStatus, `✅ Analysis complete! ${manuallyMarkedNonCIUs.size > 0 ? `(${manuallyMarkedNonCIUs.size} manually marked words excluded from CIUs)` : ''}`, 'success');
